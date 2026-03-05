@@ -2,6 +2,27 @@ spring:
   application:
     name: youth-link
 
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.vectorstore.chroma.autoconfigure.ChromaVectorStoreAutoConfiguration
+
+  # Spring AI 자동설정 통과를 위한 가짜 값 (실제 사용 안됨)
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: dummy-id
+          location: us-central1
+        embedding:
+          project-id: dummy-id
+          location: us-central1
+    chroma:
+      store:
+        collection-name: youth_policies
+      client:
+        host: localhost
+        port: 8000
+
   datasource:
     url: jdbc:h2:mem:youth_link;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
@@ -28,20 +49,6 @@ spring:
     oauth2:
       client:
         registration: {}
-
-  ai:
-    google:
-      genai:
-        api-key: test-key
-        chat:
-          options:
-            model: gemini-2.5-flash
-    chroma:
-      store:
-        collection-name: youth_policies
-      client:
-        host: localhost
-        port: 8000
 
 youth-center:
   api:

@@ -38,12 +38,14 @@ spring:
 #            user-name-attribute: id
 
   ai:
-    google:
-      genai:
-        api-key: ${GEMINI_API_KEY}
-        chat:
-          options:
-            model: gemini-2.5-flash
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID:youth-link}
+          location: ${GCP_LOCATION:us-central1}
+          chat:
+            options:
+              model: gemini-2.0-flash
     chroma:
       store:
         collection-name: youth_policies
