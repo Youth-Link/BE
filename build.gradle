@@ -32,10 +32,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
-	// Spring AI (Vertex AI Gemini + Embedding + Chroma Vector Store)
-	implementation platform('org.springframework.ai:spring-ai-bom:1.0.0')
-	implementation 'org.springframework.ai:spring-ai-starter-model-vertex-ai-gemini'
-	implementation 'org.springframework.ai:spring-ai-starter-model-vertex-ai-embedding'
+	// Spring AI (Google AI Studio Gemini + Chroma Vector Store)
+	implementation platform('org.springframework.ai:spring-ai-bom:1.1.0')
+	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 	implementation 'org.springframework.ai:spring-ai-starter-vector-store-chroma'
 
 	compileOnly 'org.projectlombok:lombok'
