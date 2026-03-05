@@ -1,6 +1,6 @@
-package com.youthlink.server.member;
+package com.youthlink.server.domain.member.entity;
 
-import com.youthlink.server.common.BaseTimeEntity;
+import com.youthlink.server.common.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

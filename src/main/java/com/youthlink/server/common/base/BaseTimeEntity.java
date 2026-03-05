@@ -1,4 +1,4 @@
-package com.youthlink.server.common;
+package com.youthlink.server.common.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

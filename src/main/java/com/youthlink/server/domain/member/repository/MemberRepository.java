@@ -1,6 +1,8 @@
-package com.youthlink.server.member;
+package com.youthlink.server.domain.member.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.youthlink.server.domain.member.entity.Member;
 
 import java.util.Optional;
 
