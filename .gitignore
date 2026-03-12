@@ -39,3 +39,9 @@ out/
 ### Environment ###
 .env.properties
 .env
+
+### Antigravity ###
+.antigravity
+
+### macOS ###
+.DS_Store
