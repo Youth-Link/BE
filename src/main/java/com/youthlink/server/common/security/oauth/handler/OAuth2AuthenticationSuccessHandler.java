@@ -40,9 +40,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // refreshTokenExpiration은 ms 단위 → setMaxAge는 초(s) 단위이므로 /1000 변환
         int cookieMaxAge = (int) (jwtProperties.getRefreshTokenExpiration() / 1000);
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setHttpOnly(true); // HTTP 통신 시에만 쿠키 전송 (XSS 공격 방어)
         refreshTokenCookie.setSecure(false); // 로컬 테스트용. 운영 환경에서는 반드시 true로 변경
-        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setPath("/"); // 모든 경로에서 쿠키 접근 가능
         refreshTokenCookie.setMaxAge(cookieMaxAge);
         response.addCookie(refreshTokenCookie);
 
