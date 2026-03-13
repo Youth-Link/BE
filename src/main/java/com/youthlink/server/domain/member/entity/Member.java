@@ -1,14 +1,16 @@
 package com.youthlink.server.domain.member.entity;
 
 import com.youthlink.server.common.base.BaseTimeEntity;
+import com.youthlink.server.domain.member.enums.EducationLevel;
+import com.youthlink.server.domain.member.enums.Gender;
+import com.youthlink.server.domain.region.entity.Region;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
@@ -23,10 +25,17 @@ public class Member extends BaseTimeEntity {
 
     private Integer age;
 
-    private String region;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
 
-    @Column(length = 50)
-    private String education;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    private EducationLevel education;
 
     @Column(length = 50)
     private String employmentStatus;
@@ -36,24 +45,14 @@ public class Member extends BaseTimeEntity {
 
     private String profileImageUrl;
 
-    @Builder
-    public Member(String email, String name, Integer age, String region,
-            String education, String employmentStatus, String incomeLevel) {
-        this.email = email;
-        this.name = name;
-        this.age = age;
-        this.region = region;
-        this.education = education;
-        this.employmentStatus = employmentStatus;
-        this.incomeLevel = incomeLevel;
-    }
-
-    public void updateProfile(String name, Integer age, String region,
-            String education, String employmentStatus, String incomeLevel) {
+    public void updateProfile(String name, Integer age, Gender gender,
+            Region region, EducationLevel education, String employmentStatus, String incomeLevel) {
         if (name != null)
             this.name = name;
         if (age != null)
             this.age = age;
+        if (gender != null)
+            this.gender = gender;
         if (region != null)
             this.region = region;
         if (education != null)
@@ -62,5 +61,11 @@ public class Member extends BaseTimeEntity {
             this.employmentStatus = employmentStatus;
         if (incomeLevel != null)
             this.incomeLevel = incomeLevel;
+    }
+
+    // 프로필 필수 정보가 모두 입력되었는지 확인
+    // 소셜 로그인 직후에는 email, name만 존재하므로 나머지 필수값이 없으면 프로필 미완성 상태로 판단
+    public boolean isProfileComplete() {
+        return name != null && age != null && gender != null && region != null && education != null;
     }
 }
