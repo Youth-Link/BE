@@ -7,6 +7,7 @@ import com.youthlink.server.domain.member.dto.MemberResDto;
 import com.youthlink.server.domain.member.entity.Member;
 import com.youthlink.server.domain.member.exception.MemberException;
 import com.youthlink.server.domain.member.repository.MemberRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,5 +33,17 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 request.incomeLevel());
 
         return MemberConverter.toMemberDetailDto(member);
+    }
+
+    @Override
+    public Member getOrCreateMember(String email, String name) {
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        if (memberOptional.isPresent()) {
+            return memberOptional.get();
+        }
+        return memberRepository.save(Member.builder()
+                .email(email)
+                .name(name)
+                .build());
     }
 }
