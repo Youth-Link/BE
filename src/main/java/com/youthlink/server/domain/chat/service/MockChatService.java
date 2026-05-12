@@ -1,11 +1,13 @@
 package com.youthlink.server.domain.chat.service;
 
+import com.youthlink.server.domain.chat.dto.ChatMessageResponse;
 import com.youthlink.server.domain.chat.dto.ChatRequest;
 import com.youthlink.server.domain.chat.dto.ChatResponse;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 
 @Service
 @Profile("local")
@@ -18,5 +20,14 @@ public class MockChatService implements ChatService {
                 .sessionId(request.getSessionId())
                 .sources(Collections.emptyList())
                 .build();
+    }
+
+    @Override
+    public List<ChatMessageResponse> getMessages(Long memberId, String sessionId) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void deleteSession(Long memberId, String sessionId) {
     }
 }
