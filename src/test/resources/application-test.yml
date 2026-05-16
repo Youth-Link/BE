@@ -26,8 +26,10 @@ spring:
   # 테스트 환경에서 Spring AI 자동 구성 비활성화 (Chroma/Gemini 연결 불필요)
   autoconfigure:
     exclude:
-      - org.springframework.ai.autoconfigure.vectorstore.chroma.ChromaVectorStoreAutoConfiguration
-      - org.springframework.ai.autoconfigure.google.genai.GoogleGenAiAutoConfiguration
+      - org.springframework.ai.vectorstore.chroma.autoconfigure.ChromaVectorStoreAutoConfiguration
+      - org.springframework.ai.model.google.genai.autoconfigure.chat.GoogleGenAiChatAutoConfiguration
+      - org.springframework.ai.model.google.genai.autoconfigure.embedding.GoogleGenAiEmbeddingConnectionAutoConfiguration
+      - org.springframework.ai.model.google.genai.autoconfigure.embedding.GoogleGenAiTextEmbeddingAutoConfiguration
 
 youth-center:
   api:
