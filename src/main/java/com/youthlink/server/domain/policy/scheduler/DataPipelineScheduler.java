@@ -1,5 +1,6 @@
 package com.youthlink.server.domain.policy.scheduler;
 
+import com.youthlink.server.domain.notification.service.NotificationService;
 import com.youthlink.server.domain.policy.entity.Policy;
 import com.youthlink.server.domain.policy.service.PolicyEmbeddingService;
 import com.youthlink.server.domain.policy.service.PolicyFetchService;
@@ -17,6 +18,7 @@ public class DataPipelineScheduler {
 
     private final PolicyFetchService policyFetchService;
     private final PolicyEmbeddingService policyEmbeddingService;
+    private final NotificationService notificationService;
 
     /**
      * 매일 새벽 2시에 온통청년 정책 데이터를 수집하고 Chroma에 임베딩한다.
@@ -28,6 +30,7 @@ public class DataPipelineScheduler {
         try {
             List<Policy> changedPolicies = policyFetchService.fetchAndSave();
             policyEmbeddingService.embedPolicies(changedPolicies);
+            notificationService.generateNotifications(changedPolicies);
             log.info("정책 데이터 파이프라인 완료 - 처리 {}건", changedPolicies.size());
         } catch (Exception e) {
             log.error("정책 데이터 파이프라인 실패: {}", e.getMessage());
@@ -41,6 +44,7 @@ public class DataPipelineScheduler {
         log.info("정책 수동 동기화 시작");
         List<Policy> changedPolicies = policyFetchService.fetchAndSave();
         policyEmbeddingService.embedPolicies(changedPolicies);
+        notificationService.generateNotifications(changedPolicies);
         log.info("정책 수동 동기화 완료 - 처리 {}건", changedPolicies.size());
         return changedPolicies;
     }
