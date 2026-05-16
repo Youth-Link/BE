@@ -40,8 +40,14 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**", "/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/", "/login/**", "/oauth2/**",
+                                "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                                "/api/auth/**",
+                                "/h2-console/**"
+                        ).permitAll()
                         .anyRequest().authenticated())
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .exceptionHandling(conf -> conf
                     .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                     .accessDeniedHandler(jwtAccessDeniedHandler)

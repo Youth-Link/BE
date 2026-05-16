@@ -7,5 +7,7 @@ import com.youthlink.server.domain.member.entity.Member;
 public interface MemberCommandService {
     MemberResDto.MemberDetailDto updateProfile(Long memberId, MemberReqDto.ProfileUpdateDto request);
 
+    MemberResDto.MemberDetailDto updateProfileByEmail(String email, MemberReqDto.ProfileUpdateDto request);
+
     Member getOrCreateMember(String email, String name);
 }
