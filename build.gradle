@@ -22,6 +22,13 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:1.0.0"
+	}
 }
 
 dependencies {
@@ -41,6 +48,14 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+	// Spring AI - Google Gemini (채팅 + 임베딩 모델 자동 구성)
+	implementation 'org.springframework.ai:spring-ai-google-genai-spring-boot-starter'
+	// Spring AI - Chroma Vector Store (VectorStore Bean 자동 구성)
+	implementation 'org.springframework.ai:spring-ai-vectorstore-chroma-spring-boot-starter'
+
+	// XML 파싱 (온통청년 API 응답)
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

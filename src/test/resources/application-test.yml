@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: youth-link
+
+  datasource:
+    url: jdbc:h2:mem:youth_link_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  security:
+    oauth2:
+      client:
+        registration: {}
+
+  # 테스트 환경에서 Spring AI 자동 구성 비활성화 (Chroma/Gemini 연결 불필요)
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.autoconfigure.vectorstore.chroma.ChromaVectorStoreAutoConfiguration
+      - org.springframework.ai.autoconfigure.google.genai.GoogleGenAiAutoConfiguration
+
+youth-center:
+  api:
+    url: https://www.youthcenter.go.kr/go/ythip/getPlcy
+    key: test-key
+
+jwt:
+  secret: test-secret-key-must-be-at-least-32-characters-long
+  access-token-expiration: 3600000
+  refresh-token-expiration: 1209600000
+  oauth2-redirect-uri: http://localhost:3000/oauth/callback
