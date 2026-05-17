@@ -80,10 +80,8 @@ public class PolicyFetchServiceImpl implements PolicyFetchService {
             Optional<Policy> existing = policyRepository.findByBizId(item.getBizId());
             if (existing.isPresent()) {
                 Policy policy = existing.get();
-                String beforeName = policy.getPolyBizSjnm();
-                policy.update(item);
-                // 내용이 바뀐 경우만 변경 목록에 포함
-                if (!item.getPolyBizSjnm().equals(beforeName) || true) {
+                boolean isChanged = policy.update(item);
+                if (isChanged) {
                     changed.add(policy);
                 }
             } else {
