@@ -23,6 +23,9 @@ spring:
         default_batch_fetch_size: 100
     database-platform: org.hibernate.dialect.H2Dialect
 
+  autoconfigure:
+    exclude: org.springframework.ai.vectorstore.chroma.autoconfigure.ChromaVectorStoreAutoConfiguration
+
   # Security OAuth2 비활성화
   security:
     oauth2:
@@ -36,12 +39,16 @@ spring:
         chat:
           options:
             model: gemini-2.5-flash
+        embedding:
+          api-key: test-key
+          options:
+            model: text-embedding-004
     vectorstore:
       chroma:
         collection-name: youth_policies
         initialize-schema: true   # 컬렉션 없으면 자동 생성
         client:
-          host: localhost
+          host: http://localhost
           port: 8000
 
 youth-center:
