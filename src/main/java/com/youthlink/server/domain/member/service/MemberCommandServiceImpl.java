@@ -51,10 +51,17 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
+        Region region = null;
+        if (request.regionId() != null) {
+            region = regionRepository.findById(request.regionId())
+                    .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        }
+
         member.updateProfile(
                 request.name(),
                 request.age(),
-                request.region(),
+                request.gender(),
+                region,
                 request.education(),
                 request.employmentStatus(),
                 request.incomeLevel());
