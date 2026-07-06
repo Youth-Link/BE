@@ -23,6 +23,14 @@ spring:
       client:
         registration: {}
 
+  ai:
+    google:
+      genai:
+        embedding:
+          api-key: test-key
+          options:
+            model: text-embedding-004
+
   # 테스트 환경에서 Spring AI 자동 구성 비활성화 (Chroma/Gemini 연결 불필요)
   autoconfigure:
     exclude:
