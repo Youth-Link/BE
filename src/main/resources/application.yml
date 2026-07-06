@@ -46,16 +46,18 @@ spring:
         api-key: ${GEMINI_API_KEY}
         chat:
           options:
-            model: gemini-2.0-flash
+            model: gemini-2.5-flash
         embedding:
+          api-key: ${GEMINI_API_KEY}
           options:
             model: text-embedding-004
-    chroma:
-      store:
+    vectorstore:
+      chroma:
         collection-name: youth_policies
-      client:
-        host: localhost
-        port: 8000
+        initialize-schema: true   # 컬렉션 없으면 자동 생성
+        client:
+          host: http://localhost
+          port: 8000
 
 youth-center:
   api:
