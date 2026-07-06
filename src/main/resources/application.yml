@@ -54,7 +54,7 @@ spring:
     vectorstore:
       chroma:
         collection-name: youth_policies
-        initialize-schema: true
+        initialize-schema: true   # 컬렉션 없으면 자동 생성
         client:
           host: http://localhost
           port: 8000

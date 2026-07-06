@@ -2,6 +2,30 @@ spring:
   application:
     name: youth-link
 
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.vectorstore.chroma.autoconfigure.ChromaVectorStoreAutoConfiguration
+
+  # Spring AI 로컬 설정 (더미 API 키 - 실제 테스트 시 실제 키로 교체)
+  ai:
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY:dummy-key}
+        chat:
+          options:
+            model: gemini-2.5-flash
+        embedding:
+          api-key: ${GEMINI_API_KEY:dummy-key}
+          options:
+            model: text-embedding-004
+    vectorstore:
+      chroma:
+        collection-name: youth_policies
+        initialize-schema: true   # 컬렉션 없으면 자동 생성
+        client:
+          host: http://localhost
+          port: 8000
+
   datasource:
     url: jdbc:h2:mem:youth_link;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
@@ -28,28 +52,6 @@ spring:
     oauth2:
       client:
         registration: {}
-
-  autoconfigure:
-    exclude: org.springframework.ai.vectorstore.chroma.autoconfigure.ChromaVectorStoreAutoConfiguration
-
-  ai:
-    google:
-      genai:
-        api-key: test-key
-        chat:
-          options:
-            model: gemini-2.5-flash
-        embedding:
-          api-key: test-key
-          options:
-            model: text-embedding-004
-    vectorstore:
-      chroma:
-        collection-name: youth_policies
-        initialize-schema: true
-        client:
-          host: http://localhost
-          port: 8000
 
 youth-center:
   api:
