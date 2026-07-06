@@ -36,6 +36,22 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
+    public MemberResDto.MemberDetailDto updateProfileByEmail(String email, MemberReqDto.ProfileUpdateDto request) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.updateProfile(
+                request.name(),
+                request.age(),
+                request.region(),
+                request.education(),
+                request.employmentStatus(),
+                request.incomeLevel());
+
+        return MemberConverter.toMemberDetailDto(member);
+    }
+
+    @Override
     public Member getOrCreateMember(String email, String name) {
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
         if (memberOptional.isPresent()) {
