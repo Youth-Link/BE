@@ -6,6 +6,9 @@ import com.youthlink.server.domain.chat.dto.ChatMessageResponse;
 import com.youthlink.server.domain.chat.dto.ChatRequest;
 import com.youthlink.server.domain.chat.dto.ChatResponse;
 import com.youthlink.server.domain.chat.dto.PolicySource;
+import com.youthlink.server.domain.member.entity.Member;
+import com.youthlink.server.domain.member.repository.MemberRepository;
+import com.youthlink.server.domain.region.entity.Region;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -17,6 +20,8 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.Filter;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -39,6 +44,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatClient.Builder chatClientBuilder;
     private final VectorStore vectorStore;
     private final ChatMessageRepository chatMessageRepository;
+    private final MemberRepository memberRepository;
     private final ResourceLoader resourceLoader;
 
     private static final String SYSTEM_PROMPT_PATH = "classpath:prompts/system-prompt.st";
@@ -48,7 +54,7 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public ChatResponse chat(Long memberId, ChatRequest request) {
         // Vector Store에서 유사 정책 검색, 최대 5개 - TOP_K_RESULTS
-        List<Document> relevantDocs = searchPolicies(request.getMessage());
+        List<Document> relevantDocs = searchPolicies(request.getMessage(), memberId);
 
         // 컨텍스트 문자열 생성 - 텍스트+정책명 = AI가 참고하는 지식 베이스(context) 문자열 생성
         String context = buildContext(relevantDocs);
@@ -106,17 +112,39 @@ public class ChatServiceImpl implements ChatService {
         chatMessageRepository.deleteByMemberIdAndSessionId(memberId, sessionId);
     }
 
-    private List<Document> searchPolicies(String query) {
+    private List<Document> searchPolicies(String query, Long memberId) {
         try {
-            SearchRequest searchRequest = SearchRequest.builder()
-                    .query(query)
-                    .topK(TOP_K_RESULTS)
-                    .build();
-            return vectorStore.similaritySearch(searchRequest);
+            String region = memberRepository.findById(memberId)
+                    .map(Member::getRegion)
+                    .map(Region::getSido)
+                    .filter(r -> r != null && !r.isBlank())
+                    .orElse(null);
+
+            if (region != null) {
+                List<Document> filtered = runSimilaritySearch(query, buildRegionFilter(region));
+                if (!filtered.isEmpty()) {
+                    return filtered;
+                }
+            }
+            return runSimilaritySearch(query, null);
         } catch (Exception e) {
             log.warn("벡터 검색 실패: {}", e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    private List<Document> runSimilaritySearch(String query, Filter.Expression filterExpression) {
+        SearchRequest.Builder builder = SearchRequest.builder()
+                .query(query)
+                .topK(TOP_K_RESULTS);
+        if (filterExpression != null) {
+            builder.filterExpression(filterExpression);
+        }
+        return vectorStore.similaritySearch(builder.build());
+    }
+
+    private Filter.Expression buildRegionFilter(String region) {
+        return new FilterExpressionBuilder().eq("region", region).build();
     }
 
     private String buildContext(List<Document> documents) {
@@ -169,10 +197,10 @@ public class ChatServiceImpl implements ChatService {
     private List<PolicySource> extractSources(List<Document> documents) {
         return documents.stream()
                 .map(doc -> PolicySource.builder()
-                        .policyId(doc.getMetadata().getOrDefault("bizId", "").toString())
+                        .policyId(doc.getMetadata().getOrDefault("policyId", "").toString())
                         .policyName(doc.getMetadata().getOrDefault("policyName", "").toString())
-                        .url(doc.getMetadata().getOrDefault("rfcSiteUrl1", "").toString())
-                        .organization(doc.getMetadata().getOrDefault("cnsgNmor", "").toString())
+                        .url(doc.getMetadata().getOrDefault("sourceUrl", "").toString())
+                        .organization(doc.getMetadata().getOrDefault("organization", "").toString())
                         .build())
                 .collect(Collectors.toList());
     }
