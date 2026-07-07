@@ -2,6 +2,7 @@ package com.youthlink.server.common.security.oauth.handler;
 
 import com.youthlink.server.common.security.JwtProperties;
 import com.youthlink.server.common.security.JwtTokenProvider;
+import com.youthlink.server.domain.member.repository.MemberRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
+    private final MemberRepository memberRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -37,18 +39,23 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
         // RefreshToken을 HttpOnly 쿠키에 저장
-        // refreshTokenExpiration은 ms 단위 → setMaxAge는 초(s) 단위이므로 /1000 변환
         int cookieMaxAge = (int) (jwtProperties.getRefreshTokenExpiration() / 1000);
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true); // HTTP 통신 시에만 쿠키 전송 (XSS 공격 방어)
+        refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(false); // 로컬 테스트용. 운영 환경에서는 반드시 true로 변경
-        refreshTokenCookie.setPath("/"); // 모든 경로에서 쿠키 접근 가능
+        refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(cookieMaxAge);
         response.addCookie(refreshTokenCookie);
 
-        // AccessToken을 쿼리 스트링에 담아 프론트엔드로 리다이렉트
+        // 프로필 완성 여부 확인 → 프론트에서 프로필 입력 페이지 분기에 활용
+        boolean isNewMember = memberRepository.findByEmail(email)
+                .map(member -> !member.isProfileComplete())
+                .orElse(true);
+
+        // AccessToken + isNewMember를 쿼리 스트링에 담아 프론트엔드로 리다이렉트
         String targetUrl = UriComponentsBuilder.fromUriString(jwtProperties.getOauth2RedirectUri())
                 .queryParam("accessToken", accessToken)
+                .queryParam("isNewMember", isNewMember)
                 .build().toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

@@ -1,5 +1,7 @@
 package com.youthlink.server.domain.member.dto;
 
+import com.youthlink.server.domain.member.enums.EducationLevel;
+import com.youthlink.server.domain.member.enums.Gender;
 import lombok.Builder;
 
 public class MemberResDto {
@@ -10,9 +12,18 @@ public class MemberResDto {
             String email,
             String name,
             Integer age,
-            String region,
-            String education,
+            Gender gender,
+            RegionDto region,
+            EducationLevel education,
             String employmentStatus,
-            String incomeLevel) {
+            String incomeLevel,
+            boolean isProfileComplete) {
+    }
+
+    @Builder
+    public record RegionDto(
+            Long id,
+            String sido,
+            String sigungu) {
     }
 }
