@@ -8,6 +8,7 @@ import com.youthlink.server.domain.chat.dto.ChatResponse;
 import com.youthlink.server.domain.chat.dto.PolicySource;
 import com.youthlink.server.domain.member.entity.Member;
 import com.youthlink.server.domain.member.repository.MemberRepository;
+import com.youthlink.server.domain.region.entity.Region;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -115,6 +116,7 @@ public class ChatServiceImpl implements ChatService {
         try {
             String region = memberRepository.findById(memberId)
                     .map(Member::getRegion)
+                    .map(Region::getSido)
                     .filter(r -> r != null && !r.isBlank())
                     .orElse(null);
 
