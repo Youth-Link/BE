@@ -47,8 +47,9 @@ public class GeminiEmbeddingConfig {
 
         @Override
         public EmbeddingResponse call(EmbeddingRequest request) {
+            String modelPath = "models/" + model;
             List<EmbedRequest> requests = request.getInstructions().stream()
-                    .map(text -> new EmbedRequest(new EmbedContent(List.of(new EmbedPart(text)))))
+                    .map(text -> new EmbedRequest(modelPath, new EmbedContent(List.of(new EmbedPart(text)))))
                     .toList();
 
             BatchEmbedResponse response = restClient.post()
@@ -70,7 +71,7 @@ public class GeminiEmbeddingConfig {
         }
 
         record BatchEmbedRequest(List<EmbedRequest> requests) {}
-        record EmbedRequest(EmbedContent content) {}
+        record EmbedRequest(String model, EmbedContent content) {}
         record EmbedContent(List<EmbedPart> parts) {}
         record EmbedPart(String text) {}
 

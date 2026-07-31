@@ -19,7 +19,7 @@ public class Policy extends BaseTimeEntity {
     @Column(unique = true, nullable = false, length = 50)
     private String bizId;
 
-    @Column(length = 200)
+    @Column(length = 300)
     private String polyBizSjnm;
 
     @Lob
@@ -43,13 +43,15 @@ public class Policy extends BaseTimeEntity {
     @Lob
     private String incmRqisCn;
 
-    @Column(length = 200)
+    @Column(length = 300)
     private String cnsgNmor;
 
-    @Column(length = 500)
+    // 실제 공공데이터 URL이 500자를 종종 넘어서 Lob으로 둔다.
+    @Lob
     private String polyUrl;
 
-    @Column(length = 50)
+    // 신 API는 시/도 명칭 대신 기관명을 지역 대용으로 쓰므로(PolicyConverter 참고) 길이를 넉넉히 잡는다.
+    @Column(length = 300)
     private String ctpvNm;
 
     /**
@@ -57,31 +59,43 @@ public class Policy extends BaseTimeEntity {
      * 변경 없는 정책은 Chroma 재적재 및 알림 생성 대상에서 제외된다.
      */
     public boolean update(YouthPolicyResponse.PolicyItem item) {
+        String newPolyBizSjnm = item.getPlcyNm();
+        String newPolyItcnCn = item.getPlcyExplnCn();
+        String newSporCn = item.getPlcySprtCn();
+        String newRqutPrdCn = item.toRqutPrdCn();
+        String newAgeInfo = item.toAgeInfo();
+        String newEmpmSttsCd = item.getJobCd();
+        String newAccrRqisCd = item.getSchoolCd();
+        String newIncmRqisCn = item.toIncmRqisCn();
+        String newCnsgNmor = item.toCnsgNmor();
+        String newPolyUrl = item.toPolyUrl();
+        String newCtpvNm = item.toCtpvNm();
+
         boolean changed =
-                !equals(this.polyBizSjnm, item.getPolyBizSjnm()) ||
-                !equals(this.polyItcnCn, item.getPolyItcnCn()) ||
-                !equals(this.sporCn, item.getSporCn()) ||
-                !equals(this.rqutPrdCn, item.getRqutPrdCn()) ||
-                !equals(this.ageInfo, item.getAgeInfo()) ||
-                !equals(this.empmSttsCd, item.getEmpmSttsCd()) ||
-                !equals(this.accrRqisCd, item.getAccrRqisCd()) ||
-                !equals(this.incmRqisCn, item.getIncmRqisCn()) ||
-                !equals(this.cnsgNmor, item.getCnsgNmor()) ||
-                !equals(this.polyUrl, item.getPolyUrl()) ||
-                !equals(this.ctpvNm, item.getCtpvNm());
+                !equals(this.polyBizSjnm, newPolyBizSjnm) ||
+                !equals(this.polyItcnCn, newPolyItcnCn) ||
+                !equals(this.sporCn, newSporCn) ||
+                !equals(this.rqutPrdCn, newRqutPrdCn) ||
+                !equals(this.ageInfo, newAgeInfo) ||
+                !equals(this.empmSttsCd, newEmpmSttsCd) ||
+                !equals(this.accrRqisCd, newAccrRqisCd) ||
+                !equals(this.incmRqisCn, newIncmRqisCn) ||
+                !equals(this.cnsgNmor, newCnsgNmor) ||
+                !equals(this.polyUrl, newPolyUrl) ||
+                !equals(this.ctpvNm, newCtpvNm);
 
         if (changed) {
-            this.polyBizSjnm = item.getPolyBizSjnm();
-            this.polyItcnCn = item.getPolyItcnCn();
-            this.sporCn = item.getSporCn();
-            this.rqutPrdCn = item.getRqutPrdCn();
-            this.ageInfo = item.getAgeInfo();
-            this.empmSttsCd = item.getEmpmSttsCd();
-            this.accrRqisCd = item.getAccrRqisCd();
-            this.incmRqisCn = item.getIncmRqisCn();
-            this.cnsgNmor = item.getCnsgNmor();
-            this.polyUrl = item.getPolyUrl();
-            this.ctpvNm = item.getCtpvNm();
+            this.polyBizSjnm = newPolyBizSjnm;
+            this.polyItcnCn = newPolyItcnCn;
+            this.sporCn = newSporCn;
+            this.rqutPrdCn = newRqutPrdCn;
+            this.ageInfo = newAgeInfo;
+            this.empmSttsCd = newEmpmSttsCd;
+            this.accrRqisCd = newAccrRqisCd;
+            this.incmRqisCn = newIncmRqisCn;
+            this.cnsgNmor = newCnsgNmor;
+            this.polyUrl = newPolyUrl;
+            this.ctpvNm = newCtpvNm;
         }
 
         return changed;

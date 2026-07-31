@@ -1,11 +1,11 @@
 spring:
-  profiles:
-    active: local
+  config:
+    import: optional:file:.env.properties
   application:
     name: youth-link
 
   datasource:
-    url: jdbc:mysql://localhost:3306/youth_link?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3307/youth_link?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     username: root
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -14,10 +14,15 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+
+  sql:
+    init:
+      mode: always
 
   security:
     oauth2:
@@ -50,7 +55,7 @@ spring:
         embedding:
           api-key: ${GEMINI_API_KEY}
           options:
-            model: text-embedding-004
+            model: gemini-embedding-001
     vectorstore:
       chroma:
         collection-name: youth_policies

@@ -18,6 +18,11 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
 
+  # data.sql(로컬 지역 시드 데이터)이 테스트 H2에도 자동 적용되는 걸 막는다.
+  sql:
+    init:
+      mode: never
+
   security:
     oauth2:
       client:
@@ -29,7 +34,7 @@ spring:
         embedding:
           api-key: test-key
           options:
-            model: text-embedding-004
+            model: gemini-embedding-001
 
   # 테스트 환경에서 Spring AI 자동 구성 비활성화 (Chroma/Gemini 연결 불필요)
   autoconfigure:
