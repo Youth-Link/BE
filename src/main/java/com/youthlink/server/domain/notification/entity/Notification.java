@@ -31,7 +31,8 @@ public class Notification extends BaseTimeEntity {
     @Lob
     private String content;
 
-    @Column(nullable = false)
+    // "read"는 MySQL 예약어라 컬럼명을 명시적으로 지정한다.
+    @Column(name = "is_read", nullable = false)
     @Builder.Default
     private boolean read = false;
 

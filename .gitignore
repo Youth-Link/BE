@@ -37,8 +37,8 @@ out/
 .vscode/
 
 ### Environment ###
-.env.properties
 .env
+.env.properties
 
 ### Antigravity ###
 .antigravity

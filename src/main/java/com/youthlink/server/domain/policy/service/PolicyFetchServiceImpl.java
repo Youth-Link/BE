@@ -1,6 +1,6 @@
 package com.youthlink.server.domain.policy.service;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.youthlink.server.domain.policy.code.PolicyErrorCode;
 import com.youthlink.server.domain.policy.config.YouthPolicyApiProperties;
 import com.youthlink.server.domain.policy.converter.PolicyConverter;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PolicyFetchServiceImpl implements PolicyFetchService {
 
-    private static final XmlMapper XML_MAPPER = new XmlMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final int PAGE_SIZE = 100;
 
     private final RestClient youthPolicyRestClient;
@@ -50,22 +50,22 @@ public class PolicyFetchServiceImpl implements PolicyFetchService {
         return changedPolicies;
     }
 
-    private List<YouthPolicyResponse.PolicyItem> fetchPage(int pageIndex) {
+    private List<YouthPolicyResponse.PolicyItem> fetchPage(int pageNum) {
         try {
-            int finalPageIndex = pageIndex;
-            String xml = youthPolicyRestClient.get()
+            String json = youthPolicyRestClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .queryParam("openApiVlak", props.getKey())
-                            .queryParam("pageIndex", finalPageIndex)
+                            .queryParam("apiKeyNm", props.getKey())
+                            .queryParam("pageNum", pageNum)
                             .queryParam("pageSize", PAGE_SIZE)
                             .build())
                     .retrieve()
                     .body(String.class);
 
-            YouthPolicyResponse response = XML_MAPPER.readValue(xml, YouthPolicyResponse.class);
-            return response.getYouthPolicies();
+            YouthPolicyResponse response = OBJECT_MAPPER.readValue(json, YouthPolicyResponse.class);
+            if (response.getResult() == null) return List.of();
+            return response.getResult().getYouthPolicyList();
         } catch (Exception e) {
-            log.error("온통청년 API 호출 실패 (page={}): {}", pageIndex, e.getMessage());
+            log.error("온통청년 API 호출 실패 (page={}): {}", pageNum, e.getMessage());
             throw new PolicyException(PolicyErrorCode.POLICY_FETCH_FAILED);
         }
     }
@@ -75,9 +75,9 @@ public class PolicyFetchServiceImpl implements PolicyFetchService {
         List<Policy> changed = new ArrayList<>();
 
         for (YouthPolicyResponse.PolicyItem item : items) {
-            if (item.getBizId() == null || item.getBizId().isBlank()) continue;
+            if (item.getPlcyNo() == null || item.getPlcyNo().isBlank()) continue;
 
-            Optional<Policy> existing = policyRepository.findByBizId(item.getBizId());
+            Optional<Policy> existing = policyRepository.findByBizId(item.getPlcyNo());
             if (existing.isPresent()) {
                 Policy policy = existing.get();
                 boolean isChanged = policy.update(item);

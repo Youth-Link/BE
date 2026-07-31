@@ -8,18 +8,18 @@ public class PolicyConverter {
 
     public static Policy toPolicy(YouthPolicyResponse.PolicyItem item) {
         return Policy.builder()
-                .bizId(item.getBizId())
-                .polyBizSjnm(item.getPolyBizSjnm())
-                .polyItcnCn(item.getPolyItcnCn())
-                .sporCn(item.getSporCn())
-                .rqutPrdCn(item.getRqutPrdCn())
-                .ageInfo(item.getAgeInfo())
-                .empmSttsCd(item.getEmpmSttsCd())
-                .accrRqisCd(item.getAccrRqisCd())
-                .incmRqisCn(item.getIncmRqisCn())
-                .cnsgNmor(item.getCnsgNmor())
-                .polyUrl(item.getPolyUrl())
-                .ctpvNm(item.getCtpvNm())
+                .bizId(item.getPlcyNo())
+                .polyBizSjnm(item.getPlcyNm())
+                .polyItcnCn(item.getPlcyExplnCn())
+                .sporCn(item.getPlcySprtCn())
+                .rqutPrdCn(item.toRqutPrdCn())
+                .ageInfo(item.toAgeInfo())
+                .empmSttsCd(item.getJobCd())
+                .accrRqisCd(item.getSchoolCd())
+                .incmRqisCn(item.toIncmRqisCn())
+                .cnsgNmor(item.toCnsgNmor())
+                .polyUrl(item.toPolyUrl())
+                .ctpvNm(item.toCtpvNm())
                 .build();
     }
 
